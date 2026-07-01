@@ -144,17 +144,20 @@ if DEBUG:
 else:
     # Production CORS settings
     cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
-    if cors_origins:
-        # Strip trailing slashes and whitespace from each origin
-        CORS_ALLOWED_ORIGINS = [origin.strip().rstrip('/') for origin in cors_origins.split(',')]
-    else:
-        # Fallback if no environment variable set
-        CORS_ALLOWED_ORIGINS = [
-            "https://frontend-6c2pzmsub-xerxezs-projects.vercel.app",
-            "https://frontend-gamma-three-41.vercel.app",
-            "https://xerxez.in",
-            "https://www.xerxez.in",
-        ]
+    env_origins = [origin.strip().rstrip('/') for origin in cors_origins.split(',') if origin.strip()]
+
+    # Always-allowed origins, regardless of what CORS_ALLOWED_ORIGINS is set to
+    # in the environment, so the live frontend can never be locked out by a
+    # stale/incomplete env var.
+    known_good_origins = [
+        "https://healthcare-frontend-red.vercel.app",
+        "https://frontend-6c2pzmsub-xerxezs-projects.vercel.app",
+        "https://frontend-gamma-three-41.vercel.app",
+        "https://xerxez.in",
+        "https://www.xerxez.in",
+    ]
+
+    CORS_ALLOWED_ORIGINS = list(dict.fromkeys(env_origins + known_good_origins))
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_HEADERS = True
