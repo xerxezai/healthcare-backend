@@ -97,7 +97,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 import dj_database_url
 
 # Railway PostgreSQL Configuration (Exclusive - No Fallback)
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:TCxaXngnBHmwihKBGYAlYxCPFeIqbGOi@tramway.proxy.rlwy.net:17931/railway")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 DATABASES = {
     "default": dj_database_url.parse(DATABASE_URL)
@@ -184,7 +184,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "https://www.xerxez.com",
     "https://xerxez.com",
-    "https://mastermind-production-4a1a.up.railway.app",
+    "https://mastermind-production-4a1a.up.railway.app",	
+    "https://healthcare-backend-production-5ab0.up.railway.app",
+    "https://healthcare-frontend-red.vercel.app",
 ]
 
 # Custom user model
