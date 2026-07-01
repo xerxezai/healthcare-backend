@@ -175,7 +175,7 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG  # True in production with HTTPS
 SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin in production
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = not DEBUG  # True in production with HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # True in production with HTTPS
 CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin in production
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
