@@ -172,10 +172,13 @@ CORS_ALLOWED_HEADERS = [
 
 # Session and CSRF settings
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = not DEBUG  # True in production with HTTPS
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin in production
 CSRF_COOKIE_HTTPONLY = False
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # True in production with HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin in production
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -188,7 +191,6 @@ CSRF_TRUSTED_ORIGINS = [
     "https://healthcare-backend-production-5ab0.up.railway.app",
     "https://healthcare-frontend-red.vercel.app",
 ]
-
 # Custom user model
 AUTH_USER_MODEL = "hospital.CustomUser"
 
