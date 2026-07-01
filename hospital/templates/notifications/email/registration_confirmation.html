@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Confirmation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .welcome-message {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .next-steps h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .next-steps ul {
+            padding-left: 20px;
+        }
+        .next-steps li {
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 {{ platform_name }}</h1>
+        <p>Registration Confirmation</p>
+    </div>
+
+    <div class="content">
+        <h2>Welcome Dr. {{ first_name }} {{ last_name }}!</h2>
+        
+        <div class="welcome-message">
+            <p><strong>Thank you for registering with our Healthcare Management Platform!</strong></p>
+            <p>We have successfully received your registration on <strong>{{ registration_date }}</strong>.</p>
+        </div>
+
+        <div class="highlight">
+            <p><strong>⏳ Account Status:</strong> Your account is currently <em>pending approval</em> from our administrative team.</p>
+            <p>We will carefully review your credentials and professional information to ensure the highest standards of healthcare delivery.</p>
+        </div>
+
+        <div class="next-steps">
+            <h3>📋 What Happens Next?</h3>
+            <ul>
+                <li><strong>Credential Verification:</strong> Our team will verify your medical license and professional credentials</li>
+                <li><strong>Background Review:</strong> We'll review your professional background and specialization details</li>
+                <li><strong>Compliance Check:</strong> Ensure all GDPR and HIPAA compliance requirements are met</li>
+                <li><strong>Account Activation:</strong> Once approved, you'll receive an email with login instructions</li>
+            </ul>
+        </div>
+
+        <p><strong>📧 Registered Email:</strong> {{ email }}</p>
+        
+        <div class="contact-info">
+            <h4>💬 Need Assistance?</h4>
+            <p>If you have any questions about your registration or need immediate assistance, please contact our support team:</p>
+            <p><strong>Email:</strong> {{ support_email }}</p>
+            <p><strong>Response Time:</strong> We typically respond within 24 hours</p>
+        </div>
+
+        <p><strong>🔒 Privacy & Security:</strong> Your personal and professional information is secure and will only be used for verification purposes in accordance with our privacy policy.</p>
+        
+        <p>We appreciate your patience during the review process and look forward to welcoming you to our healthcare platform!</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ platform_name }} Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated message from {{ platform_name }}. Please do not reply to this email.</p>
+        <p>If you did not register for this account, please contact {{ support_email }} immediately.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Confirmation - {{ platform_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .welcome-message {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+            text-align: center;
+        }
+        .welcome-message h2 {
+            color: #155724;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #495057;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value {
+            margin-top: 5px;
+            font-size: 16px;
+            color: #212529;
+        }
+        .status-banner {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .status-banner h3 {
+            color: #856404;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .next-steps {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .next-steps h3 {
+            color: #1976d2;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+        .next-steps li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e3f2fd;
+            position: relative;
+            padding-left: 30px;
+        }
+        .next-steps li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 10px;
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .contact-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+        .contact-section h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .contact-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .contact-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .security-notice {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .security-notice h4 {
+            color: #155724;
+            margin-top: 0;
+        }
+        .timeline {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .timeline h4 {
+            color: #495057;
+            margin-top: 0;
+            text-align: center;
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+        }
+        .timeline-number {
+            background: #007bff;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #6c757d;
+            color: white;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            .info-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .timeline-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            .timeline-number {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to {{ platform_name }}!</h1>
+        <div class="subtitle">Registration Successfully Submitted</div>
+    </div>
+
+    <div class="content">
+        <div class="welcome-message">
+            <h2>🙏 Thank you, {{ first_name }}!</h2>
+            <p>Your healthcare professional registration has been successfully submitted on <strong>{{ registration_date }}</strong></p>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 25px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3;">
+            <h3 style="color: #1976d2; margin-top: 0;">📋 Registration Summary</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">{{ user_name }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value">{{ email }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Specialization</div>
+                    <div class="info-value">{{ specialization }}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">License Number</div>
+                    <div class="info-value">{{ license_number }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-banner">
+            <h3>⏳ Account Status: Pending Approval</h3>
+            <p>Your account is currently under review by our administrative team.</p>
+            <p><strong>Expected Review Time:</strong> {{ admin_review_time }}</p>
+        </div>
+
+        <div class="timeline">
+            <h4>🚀 What Happens Next</h4>
+            {% for step in next_steps %}
+            <div class="timeline-item">
+                <div class="timeline-number">{{ forloop.counter }}</div>
+                <div>{{ step }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="contact-section">
+            <h3>💬 Need Help?</h3>
+            <p>Our support team is here to assist you during the registration process.</p>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <strong>Email</strong><br>
+                    <small>{{ contact_info.support_email }}</small>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <strong>Phone</strong><br>
+                    <small>{{ contact_info.phone }}</small>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🕒</div>
+                    <strong>Hours</strong><br>
+                    <small>{{ contact_info.hours }}</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="security-notice">
+            <h4>🔒 Privacy & Security Commitment</h4>
+            <p>Your personal and professional information is secure and encrypted. We comply with:</p>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li><strong>HIPAA:</strong> Health Insurance Portability and Accountability Act</li>
+                <li><strong>GDPR:</strong> General Data Protection Regulation</li>
+                <li><strong>SOC 2:</strong> Service Organization Control 2 compliance</li>
+            </ul>
+            <p style="margin: 0;">Your data will only be used for verification and account setup purposes.</p>
+        </div>
+
+        <div style="background: #fff3e0; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ff9800; text-align: center;">
+            <h4 style="color: #f57c00; margin-top: 0;">📧 Important</h4>
+            <p style="margin: 0;">Watch your inbox for approval notification. Check your spam folder if you don't receive it within {{ admin_review_time }}.</p>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            We appreciate your patience and look forward to welcoming you to {{ platform_name }}!
+        </p>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            Best regards,<br>
+            <strong>{{ platform_name }} Team</strong>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong>{{ platform_name }}</strong></p>
+        <p style="margin: 5px 0; font-size: 14px;">
+            This is an automated confirmation email. Please do not reply.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px;">
+            If you did not register for this account, please contact {{ contact_info.support_email }} immediately.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px; opacity: 0.8;">
+            © {{ year }} Xerxez Solutions. All rights reserved.
+        </p>
+    </div>
+</body>
+</html>

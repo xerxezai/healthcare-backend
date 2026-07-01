@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Reminder - {{ clinic_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .appointment-card {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .appointment-card h3 {
+            color: #1976D2;
+            margin-top: 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #495057;
+            width: 40%;
+        }
+        .value {
+            color: #212529;
+            width: 58%;
+            text-align: right;
+        }
+        .reminder-alert {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+            text-align: center;
+            font-weight: bold;
+        }
+        .preparation-tips {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #17a2b8;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button.secondary {
+            background: #6c757d;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .specialty-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Appointment Reminder</h1>
+        <p>{{ clinic_name }}</p>
+    </div>
+
+    <div class="content">
+        <h2>Hello {{ patient_name }},</h2>
+        
+        <div class="reminder-alert">
+            🔔 You have an upcoming appointment tomorrow!
+        </div>
+
+        <p>This is a friendly reminder about your scheduled appointment. Please review the details below:</p>
+
+        <div class="appointment-card">
+            <h3>📋 Appointment Details</h3>
+            
+            <div class="detail-row">
+                <span class="label">
+                    {% if specialty == 'dentistry' %}🦷{% elif specialty == 'dermatology' %}🧴{% elif specialty == 'radiology' %}📡{% elif specialty == 'pathology' %}🔬{% else %}👨‍⚕️{% endif %} Doctor:
+                </span>
+                <span class="value">{{ doctor_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📅 Date:</span>
+                <span class="value">{{ appointment_date }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">🕒 Time:</span>
+                <span class="value">{{ appointment_time }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">⏱️ Duration:</span>
+                <span class="value">{{ duration|default:"30" }} minutes</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">🏥 Clinic:</span>
+                <span class="value">{{ clinic_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📍 Address:</span>
+                <span class="value">{{ clinic_address }}</span>
+            </div>
+
+            {% if appointment_type %}
+            <div class="detail-row">
+                <span class="label">📋 Type:</span>
+                <span class="value">{{ appointment_type }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="preparation-tips">
+            <h4>📝 What to Bring</h4>
+            <ul>
+                <li><strong>Identification:</strong> Valid government-issued photo ID</li>
+                <li><strong>Insurance Card:</strong> Current health insurance information</li>
+                <li><strong>Medical Records:</strong> Any relevant medical history or test results</li>
+                <li><strong>Medication List:</strong> Current medications with dosages</li>
+                <li><strong>Payment Method:</strong> For any co-pays or deductibles</li>
+                {% if specialty == 'radiology' %}
+                <li><strong>Previous Imaging:</strong> Any previous X-rays, MRIs, or CT scans</li>
+                {% elif specialty == 'dentistry' %}
+                <li><strong>Dental Records:</strong> Previous dental X-rays if available</li>
+                {% elif specialty == 'dermatology' %}
+                <li><strong>Skin History:</strong> List of current skincare products and medications</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4>⚠️ Important Reminders</h4>
+            <ul>
+                <li><strong>Arrival Time:</strong> Please arrive 15 minutes before your scheduled appointment</li>
+                <li><strong>Parking:</strong> Free parking available on-site</li>
+                <li><strong>COVID-19:</strong> Please wear a mask if feeling unwell</li>
+                {% if specialty == 'pathology' %}
+                <li><strong>Fasting:</strong> {{ fasting_instructions|default:"No fasting required unless specified" }}</li>
+                {% elif specialty == 'radiology' %}
+                <li><strong>Preparation:</strong> {{ prep_instructions|default:"No special preparation required" }}</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            {% if reschedule_url %}
+            <a href="{{ reschedule_url }}" class="button">📅 Reschedule</a>
+            {% endif %}
+            {% if cancel_url %}
+            <a href="{{ cancel_url }}" class="button secondary">❌ Cancel</a>
+            {% endif %}
+            {% if patient_portal_url %}
+            <a href="{{ patient_portal_url }}" class="button">🔐 Patient Portal</a>
+            {% endif %}
+        </div>
+
+        <div class="contact-info">
+            <h4>📞 Need to Make Changes?</h4>
+            <p>If you need to reschedule or cancel your appointment, please contact us as soon as possible:</p>
+            <p><strong>Phone:</strong> {{ clinic_phone|default:"Contact clinic directly" }}</p>
+            <p><strong>Email:</strong> {{ clinic_email|default:"info@xerxez.in" }}</p>
+            <p><strong>Online:</strong> Use our patient portal for 24/7 access</p>
+            <p><strong>Notice:</strong> Please provide at least 24 hours notice for cancellations</p>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3;">
+            <h4>💬 Questions or Concerns?</h4>
+            <p>If you have any questions about your upcoming appointment or need to discuss anything with your healthcare provider:</p>
+            <p><strong>Clinic:</strong> {{ clinic_name }}</p>
+            <p><strong>Doctor:</strong> {{ doctor_name }}</p>
+            <p><strong>Specialty:</strong> {{ specialty_display|default:"General Healthcare" }}</p>
+        </div>
+
+        <p>We look forward to seeing you at your appointment!</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ clinic_name }} Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated appointment reminder from {{ clinic_name }}.</p>
+        <p>Please do not reply to this email. Contact the clinic directly for appointment changes.</p>
+        <p>For technical support: info@xerxez.in</p>
+    </div>
+</body>
+</html>

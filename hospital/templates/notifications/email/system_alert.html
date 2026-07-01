@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Alert</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545, #bd2130);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .alert-critical {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+            text-align: center;
+            font-weight: bold;
+        }
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976D2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .alert-details {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        .alert-details h3 {
+            color: #dc3545;
+            margin-top: 0;
+        }
+        .timestamp-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+            font-family: monospace;
+        }
+        .action-required {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .system-status {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 System Alert</h1>
+        <p>{{ platform_name }} - Administrator Notification</p>
+    </div>
+
+    <div class="content">
+        <div class="alert-critical">
+            ⚠️ SYSTEM ALERT: {{ alert_type }}
+        </div>
+
+        <p>This is an automated system alert notification for administrators of {{ platform_name }}. Immediate attention may be required.</p>
+
+        <div class="timestamp-info">
+            <strong>🕒 Alert Timestamp:</strong> {{ timestamp }}
+        </div>
+
+        <div class="alert-details">
+            <h3>📋 Alert Details</h3>
+            <p><strong>Alert Type:</strong> {{ alert_type }}</p>
+            <p><strong>Message:</strong></p>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 3px solid #6c757d;">
+                {{ message }}
+            </div>
+        </div>
+
+        {% if alert_type == "Security Breach" %}
+        <div class="action-required">
+            <h4>🔒 Immediate Security Actions Required</h4>
+            <ul>
+                <li><strong>Investigate Source:</strong> Identify the source and nature of the security incident</li>
+                <li><strong>Assess Impact:</strong> Determine what data or systems may be affected</li>
+                <li><strong>Contain Threat:</strong> Take immediate steps to contain any ongoing security threat</li>
+                <li><strong>Document Incident:</strong> Create detailed incident documentation</li>
+                <li><strong>Notify Stakeholders:</strong> Inform relevant parties as required by regulations</li>
+                <li><strong>Review Logs:</strong> Examine system and access logs for suspicious activity</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if alert_type == "System Performance" %}
+        <div class="action-required">
+            <h4>⚡ Performance Optimization Actions</h4>
+            <ul>
+                <li><strong>Monitor Resources:</strong> Check CPU, memory, and disk usage</li>
+                <li><strong>Database Performance:</strong> Review database query performance and optimization</li>
+                <li><strong>Network Analysis:</strong> Analyze network latency and bandwidth usage</li>
+                <li><strong>Load Balancing:</strong> Review load distribution across servers</li>
+                <li><strong>Capacity Planning:</strong> Assess need for additional resources</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if alert_type == "Data Backup" %}
+        <div class="action-required">
+            <h4>💾 Backup System Actions</h4>
+            <ul>
+                <li><strong>Verify Backup Status:</strong> Check if recent backups completed successfully</li>
+                <li><strong>Test Restore Process:</strong> Verify that backups can be restored if needed</li>
+                <li><strong>Storage Capacity:</strong> Ensure adequate backup storage space</li>
+                <li><strong>Backup Schedule:</strong> Review and optimize backup scheduling</li>
+                <li><strong>Offsite Backups:</strong> Verify offsite backup synchronization</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if alert_type == "User Account" %}
+        <div class="action-required">
+            <h4>👤 User Account Management Actions</h4>
+            <ul>
+                <li><strong>Account Review:</strong> Review the specific user account and recent activity</li>
+                <li><strong>Permission Audit:</strong> Verify user permissions and access levels</li>
+                <li><strong>Authentication Check:</strong> Review authentication logs and methods</li>
+                <li><strong>Suspicious Activity:</strong> Look for any unusual account behavior</li>
+                <li><strong>Compliance Check:</strong> Ensure account meets regulatory requirements</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="system-status">
+            <h4>🖥️ Current System Status</h4>
+            <p><strong>Platform:</strong> {{ platform_name }}</p>
+            <p><strong>Alert Priority:</strong> High</p>
+            <p><strong>Requires Immediate Attention:</strong> Yes</p>
+            <p><strong>Business Impact:</strong> Monitor for potential impact on healthcare operations</p>
+        </div>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4>📞 Escalation Procedures</h4>
+            <ol>
+                <li><strong>Initial Response:</strong> Acknowledge alert and begin investigation within 15 minutes</li>
+                <li><strong>Assessment:</strong> Complete initial impact assessment within 1 hour</li>
+                <li><strong>Escalation:</strong> Escalate to senior technical staff if unresolved within 2 hours</li>
+                <li><strong>Communication:</strong> Update stakeholders every 2 hours until resolution</li>
+                <li><strong>Documentation:</strong> Document all actions taken and resolution steps</li>
+            </ol>
+        </div>
+
+        <div class="contact-info">
+            <h4>💬 Technical Support Team</h4>
+            <p>For immediate assistance with this system alert:</p>
+            <p><strong>Emergency Contact:</strong> Contact on-call technical team</p>
+            <p><strong>System Administrator:</strong> Review system monitoring dashboard</p>
+            <p><strong>Documentation:</strong> Refer to incident response procedures</p>
+        </div>
+
+        <p><strong>This alert requires immediate administrative attention to ensure continued platform stability and security.</strong></p>
+        
+        <p>Best regards,<br>
+        <strong>{{ platform_name }} Monitoring System</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated system alert from {{ platform_name }}.</p>
+        <p>Do not reply to this email. Take appropriate action as outlined above.</p>
+        <p>Alert generated at {{ timestamp }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Refill Reminder - {{ clinic_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .medication-card {
+            background: #e8f5e8;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .medication-card h3 {
+            color: #155724;
+            margin-top: 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #495057;
+            width: 40%;
+        }
+        .value {
+            color: #212529;
+            width: 58%;
+            text-align: right;
+        }
+        .urgency-alert {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+            text-align: center;
+            font-weight: bold;
+        }
+        .urgent {
+            background: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+        .refill-instructions {
+            background: #d1ecf1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .button.secondary {
+            background: #17a2b8;
+        }
+        .button.urgent {
+            background: #dc3545;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .medication-list {
+            list-style: none;
+            padding: 0;
+        }
+        .medication-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #28a745;
+        }
+        .medication-item.urgent {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+        .days-remaining {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .days-remaining.good {
+            background: #d4edda;
+            color: #155724;
+        }
+        .days-remaining.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .days-remaining.urgent {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💊 Prescription Refill Reminder</h1>
+        <p>{{ clinic_name }}</p>
+    </div>
+
+    <div class="content">
+        <h2>Hello {{ patient_name }},</h2>
+        
+        {% if days_until_empty <= 3 %}
+        <div class="urgency-alert urgent">
+            ⚠️ URGENT: Your medication will run out in {{ days_until_empty }} day{{ days_until_empty|pluralize }}!
+        </div>
+        {% elif days_until_empty <= 7 %}
+        <div class="urgency-alert">
+            🔔 Your medication refill is due soon - {{ days_until_empty }} day{{ days_until_empty|pluralize }} remaining
+        </div>
+        {% endif %}
+
+        <p>This is a friendly reminder that your prescription{% if medications|length > 1 %}s{% endif %} {% if medications|length > 1 %}are{% else %}is{% endif %} due for refill. Please review the details below:</p>
+
+        {% for medication in medications %}
+        <div class="medication-card">
+            <h3>💊 {{ medication.name }}</h3>
+            
+            <div class="detail-row">
+                <span class="label">👨‍⚕️ Prescribed by:</span>
+                <span class="value">{{ medication.prescribing_doctor }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">💊 Dosage:</span>
+                <span class="value">{{ medication.dosage }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">⏰ Frequency:</span>
+                <span class="value">{{ medication.frequency }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📅 Last Filled:</span>
+                <span class="value">{{ medication.last_filled_date }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📊 Remaining:</span>
+                <span class="value">
+                    {{ medication.pills_remaining }} pill{{ medication.pills_remaining|pluralize }}
+                    <span class="days-remaining {% if medication.days_remaining <= 3 %}urgent{% elif medication.days_remaining <= 7 %}warning{% else %}good{% endif %}">
+                        {{ medication.days_remaining }} day{{ medication.days_remaining|pluralize }}
+                    </span>
+                </span>
+            </div>
+            
+            {% if medication.refills_remaining %}
+            <div class="detail-row">
+                <span class="label">🔄 Refills Remaining:</span>
+                <span class="value">{{ medication.refills_remaining }}</span>
+            </div>
+            {% else %}
+            <div class="detail-row">
+                <span class="label">⚠️ Status:</span>
+                <span class="value" style="color: #dc3545; font-weight: bold;">New prescription required</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <div class="refill-instructions">
+            <h4>📋 How to Refill Your Prescription</h4>
+            <ol>
+                <li><strong>Online:</strong> Use our patient portal or pharmacy app</li>
+                <li><strong>Phone:</strong> Call your pharmacy directly</li>
+                <li><strong>In-Person:</strong> Visit your pharmacy with your prescription bottle</li>
+                <li><strong>Auto-Refill:</strong> Ask your pharmacy about automatic refill services</li>
+            </ol>
+        </div>
+
+        <div class="action-buttons">
+            {% if patient_portal_url %}
+            <a href="{{ patient_portal_url }}" class="button {% if days_until_empty <= 3 %}urgent{% endif %}">🔐 Patient Portal</a>
+            {% endif %}
+            {% if pharmacy_url %}
+            <a href="{{ pharmacy_url }}" class="button secondary">🏪 Pharmacy</a>
+            {% endif %}
+            {% if doctor_contact_url %}
+            <a href="{{ doctor_contact_url }}" class="button secondary">👨‍⚕️ Contact Doctor</a>
+            {% endif %}
+        </div>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4>⚠️ Important Reminders</h4>
+            <ul>
+                <li><strong>Don't Skip Doses:</strong> Continue taking your medication as prescribed</li>
+                <li><strong>Plan Ahead:</strong> Allow 24-48 hours for prescription processing</li>
+                <li><strong>Insurance:</strong> Check that your insurance information is current</li>
+                <li><strong>Questions:</strong> Contact your healthcare provider if you have concerns</li>
+                {% if has_critical_medication %}
+                <li><strong style="color: #dc3545;">Critical Medication:</strong> This medication is essential for your health - do not run out</li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="contact-info">
+            <h4>📞 Need Help?</h4>
+            <p><strong>Healthcare Provider:</strong> {{ doctor_name|default:"Your prescribing physician" }}</p>
+            <p><strong>Clinic Phone:</strong> {{ clinic_phone|default:"Contact clinic directly" }}</p>
+            <p><strong>Pharmacy:</strong> {{ pharmacy_name|default:"Your preferred pharmacy" }}</p>
+            <p><strong>Pharmacy Phone:</strong> {{ pharmacy_phone|default:"Contact pharmacy directly" }}</p>
+            <p><strong>Emergency:</strong> If you're experiencing a medical emergency, call 911</p>
+        </div>
+
+        {% if has_drug_interactions %}
+        <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
+            <h4>⚠️ Drug Interaction Alert</h4>
+            <p>You have medications that may interact with each other. Please consult with your pharmacist or healthcare provider when refilling.</p>
+        </div>
+        {% endif %}
+
+        <p>Thank you for staying on top of your health!</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ clinic_name }} Healthcare Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated prescription reminder from {{ clinic_name }}.</p>
+        <p>Please do not reply to this email. Contact your healthcare provider or pharmacy directly.</p>
+        <p>For technical support: info@xerxez.in</p>
+    </div>
+</body>
+</html>

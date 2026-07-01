@@ -1,0 +1,16 @@
+# Nixpacks Configuration for Emergency Deployment
+# This ensures Railway bypasses CustomUser migration issues
+
+[variables]
+DJANGO_SETTINGS_MODULE = "backend.settings_emergency"
+PYTHONPATH = "/app/backend"
+
+[phases.build]
+cmds = ["python -m pip install --upgrade pip", "pip install -r requirements.txt"]
+
+[phases.deploy]
+cmd = "python manage_emergency.py runserver 0.0.0.0:8080"
+
+[staticAssets]
+# Skip static files collection for emergency deployment
+# This avoids potential errors during emergency startup

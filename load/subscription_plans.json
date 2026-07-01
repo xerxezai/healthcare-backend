@@ -1,0 +1,95 @@
+[
+  {
+    "model": "subscriptions.service",
+    "pk": 1,
+    "fields": {
+      "name": "Dr. Max AI Chatbot",
+      "description": "AI-powered medical chatbot for preliminary assistance.",
+      "price_monthly": "500.00",
+      "app_suite": "SecureNeat",
+      "usage_unit_name": "Messages",
+      "is_metered": true
+    }
+  },
+  {
+    "model": "subscriptions.service",
+    "pk": 2,
+    "fields": {
+      "name": "Intelligent MCQ Generator",
+      "description": "Generate MCQs from medical documents.",
+      "price_monthly": "700.00",
+      "app_suite": "SecureNeat",
+      "usage_unit_name": "Generations",
+      "is_metered": true
+    }
+  },
+  {
+    "model": "subscriptions.service",
+    "pk": 3,
+    "fields": {
+      "name": "Radiology Report Analysis",
+      "description": "AI analysis of radiology reports.",
+      "price_monthly": "1000.00",
+      "app_suite": "RadiologySuite",
+      "usage_unit_name": "Reports Analyzed",
+      "is_metered": true
+    }
+  },
+  {
+    "model": "subscriptions.subscriptionplan",
+    "pk": 1,
+    "fields": {
+      "name": "SecureNeat",
+      "description": "Access to essential SecureNeat features including AI chatbot and MCQ generation.",
+      "price_monthly": "25.00",
+      "currency": "USD",
+      "is_active": true,
+      "limit_chatbot_messages": 1000,
+      "limit_mcq_generations": 50,
+      "limit_report_analyses": null,
+      "limit_document_anonymizations": null,
+      "services": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "model": "subscriptions.subscriptionplan",
+    "pk": 2,
+    "fields": {
+      "name": "Radiology",
+      "description": "Access to Radiology Suite tools for medical report analysis.",
+      "price_monthly": "100.00",
+      "currency": "USD",
+      "is_active": true,
+      "limit_chatbot_messages": null,
+      "limit_mcq_generations": null,
+      "limit_report_analyses": 100,
+      "limit_document_anonymizations": 50,
+      "services": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "subscriptions.subscriptionplan",
+    "pk": 3,
+    "fields": {
+      "name": "Full Admin Access",
+      "description": "Complete access to all SecureNeat and Radiology Suite features with unlimited usage.",
+      "price_monthly": "200.00",
+      "currency": "USD",
+      "is_active": true,
+      "limit_chatbot_messages": null,
+      "limit_mcq_generations": null,
+      "limit_report_analyses": null,
+      "limit_document_anonymizations": null,
+      "services": [
+        1,
+        2,
+        3
+      ]
+    }
+  }
+]

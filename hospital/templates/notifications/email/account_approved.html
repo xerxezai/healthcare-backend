@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Approved - Welcome to Healthcare Platform</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+            text-align: center;
+        }
+        .success-message h3 {
+            margin: 0 0 10px 0;
+            color: #28a745;
+        }
+        .login-section {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .welcome-features {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .welcome-features h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #007bff;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .security-note {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Welcome to {{ platform_name }}!</h1>
+        <p>Your Account Has Been Approved</p>
+    </div>
+
+    <div class="content">
+        <div class="success-message">
+            <h3>✅ Congratulations Dr. {{ first_name }} {{ last_name }}!</h3>
+            <p><strong>Your healthcare professional account has been approved and activated!</strong></p>
+            <p>You can now access all platform features and begin managing your healthcare practice.</p>
+        </div>
+
+        <div class="login-section">
+            <h3>🔑 Access Your Account</h3>
+            <p>Your account is now active and ready to use. Click the button below to log in:</p>
+            <a href="{{ login_url }}" class="button">Login to Dashboard</a>
+            <p><small>Login URL: {{ login_url }}</small></p>
+        </div>
+
+        <div class="welcome-features">
+            <h3>🚀 Platform Features Available to You</h3>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <strong>👥 Patient Management</strong><br>
+                    Comprehensive patient records and history
+                </div>
+                <div class="feature-item">
+                    <strong>📅 Appointment Scheduling</strong><br>
+                    Manage appointments and schedules
+                </div>
+                <div class="feature-item">
+                    <strong>🧪 Laboratory Integration</strong><br>
+                    Lab results and diagnostic tools
+                </div>
+                <div class="feature-item">
+                    <strong>📊 Analytics & Reports</strong><br>
+                    Practice insights and performance metrics
+                </div>
+                <div class="feature-item">
+                    <strong>💊 Prescription Management</strong><br>
+                    Digital prescription and medication tracking
+                </div>
+                <div class="feature-item">
+                    <strong>🏥 Multi-Specialty Support</strong><br>
+                    Radiology, Dentistry, Dermatology & more
+                </div>
+            </div>
+        </div>
+
+        <div class="security-note">
+            <h4>🔒 Important Security Information</h4>
+            <ul>
+                <li>Use the same email address you registered with to log in</li>
+                <li>Your account includes multi-factor authentication for security</li>
+                <li>Please update your password on first login</li>
+                <li>Never share your login credentials with anyone</li>
+            </ul>
+        </div>
+
+        <div class="contact-info">
+            <h4>💬 Support & Assistance</h4>
+            <p>Our support team is here to help you get started:</p>
+            <p><strong>Email:</strong> {{ support_email }}</p>
+            <p><strong>Response Time:</strong> Within 24 hours</p>
+            <p><strong>Available:</strong> Monday - Friday, 9 AM - 6 PM</p>
+        </div>
+
+        <p>We're excited to have you join our healthcare community and look forward to supporting your practice!</p>
+        
+        <p>Welcome aboard!</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ platform_name }} Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated welcome message from {{ platform_name }}.</p>
+        <p>If you have any questions about your account, please contact {{ support_email }}</p>
+    </div>
+</body>
+</html>

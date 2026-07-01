@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMERGENCY ALERT - {{ alert_type }} - {{ clinic_name }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 3px solid #dc3545;
+        }
+        .emergency-banner {
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: -40px -40px 30px -40px;
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+        .alert-details {
+            background: #fff5f5;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 6px solid #dc3545;
+        }
+        .alert-details h3 {
+            color: #721c24;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 12px 0;
+            border-bottom: 2px solid #f8d7da;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #721c24;
+            width: 35%;
+            font-size: 16px;
+        }
+        .value {
+            color: #212529;
+            width: 63%;
+            text-align: right;
+            font-weight: 600;
+        }
+        .critical-info {
+            background: #721c24;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .action-required {
+            background: #ffc107;
+            color: #212529;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 6px solid #fd7e14;
+        }
+        .action-required h4 {
+            color: #856404;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .contact-emergency {
+            background: #dc3545;
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .contact-emergency h4 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .emergency-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+            animation: pulse 2s infinite;
+        }
+        .button.secondary {
+            background: #6c757d;
+            animation: none;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .patient-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .timeline {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        .severity-critical {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .severity-high {
+            color: #fd7e14;
+            font-weight: bold;
+        }
+        .severity-medium {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 EMERGENCY ALERT 🚨</h1>
+        <p style="font-size: 18px; margin: 10px 0;">{{ clinic_name }} - Immediate Action Required</p>
+    </div>
+
+    <div class="content">
+        <div class="emergency-banner">
+            ⚠️ {{ alert_type|upper }} - IMMEDIATE RESPONSE REQUIRED ⚠️
+        </div>
+
+        <div class="critical-info">
+            🚨 This is a {{ severity|default:"CRITICAL" }} emergency alert requiring immediate medical attention 🚨
+        </div>
+
+        <div class="alert-details">
+            <h3>🚨 Emergency Details</h3>
+            
+            <div class="detail-row">
+                <span class="label">🚨 Alert Type:</span>
+                <span class="value severity-{{ severity|lower|default:'critical' }}">{{ alert_type }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">⏰ Time:</span>
+                <span class="value">{{ alert_timestamp }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📍 Location:</span>
+                <span class="value">{{ location|default:"Healthcare Facility" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">🆔 Alert ID:</span>
+                <span class="value">{{ alert_id|default:"EMERGENCY-001" }}</span>
+            </div>
+            
+            {% if response_deadline %}
+            <div class="detail-row">
+                <span class="label">⏱️ Response Deadline:</span>
+                <span class="value" style="color: #dc3545; font-weight: bold;">{{ response_deadline }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if patient_name %}
+        <div class="patient-info">
+            <h4>👤 Patient Information</h4>
+            <div class="detail-row">
+                <span class="label">👤 Patient:</span>
+                <span class="value">{{ patient_name }}</span>
+            </div>
+            {% if patient_id %}
+            <div class="detail-row">
+                <span class="label">🆔 Patient ID:</span>
+                <span class="value">{{ patient_id }}</span>
+            </div>
+            {% endif %}
+            {% if patient_room %}
+            <div class="detail-row">
+                <span class="label">🏥 Room:</span>
+                <span class="value">{{ patient_room }}</span>
+            </div>
+            {% endif %}
+            {% if medical_record_number %}
+            <div class="detail-row">
+                <span class="label">📋 MRN:</span>
+                <span class="value">{{ medical_record_number }}</span>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="action-required">
+            <h4>⚡ IMMEDIATE ACTION REQUIRED</h4>
+            <p><strong>Primary Action:</strong> {{ primary_action|default:"Contact emergency response team immediately" }}</p>
+            {% if secondary_actions %}
+            <p><strong>Additional Steps:</strong></p>
+            <ul>
+                {% for action in secondary_actions %}
+                <li>{{ action }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if special_instructions %}
+            <p><strong>Special Instructions:</strong> {{ special_instructions }}</p>
+            {% endif %}
+        </div>
+
+        {% if emergency_details %}
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4>📋 Emergency Details</h4>
+            <p>{{ emergency_details }}</p>
+        </div>
+        {% endif %}
+
+        <div class="contact-emergency">
+            <h4>🚨 EMERGENCY CONTACTS</h4>
+            <p><strong>Emergency Services:</strong> 911</p>
+            <p><strong>Hospital Emergency:</strong> {{ hospital_emergency_number|default:"Contact hospital directly" }}</p>
+            <p><strong>On-Call Physician:</strong> {{ on_call_physician|default:"Contact medical staff" }}</p>
+            <p><strong>Nursing Station:</strong> {{ nursing_station|default:"Contact nursing directly" }}</p>
+            {% if emergency_coordinator %}
+            <p><strong>Emergency Coordinator:</strong> {{ emergency_coordinator }}</p>
+            {% endif %}
+        </div>
+
+        <div class="emergency-buttons">
+            {% if emergency_response_url %}
+            <a href="{{ emergency_response_url }}" class="button">🚨 EMERGENCY RESPONSE</a>
+            {% endif %}
+            {% if patient_chart_url %}
+            <a href="{{ patient_chart_url }}" class="button secondary">📋 Patient Chart</a>
+            {% endif %}
+            {% if escalation_url %}
+            <a href="{{ escalation_url }}" class="button secondary">📞 Escalate Alert</a>
+            {% endif %}
+        </div>
+
+        {% if event_timeline %}
+        <div class="timeline">
+            <h4>⏰ Event Timeline</h4>
+            {% for event in event_timeline %}
+            <div class="timeline-item">
+                <strong>{{ event.time }}:</strong> {{ event.description }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
+            <h4>⚠️ Critical Protocols</h4>
+            <ul>
+                <li><strong>DO NOT DELAY:</strong> This alert requires immediate action</li>
+                <li><strong>VERIFY RESPONSE:</strong> Confirm receipt and action taken</li>
+                <li><strong>DOCUMENT:</strong> Record all actions and observations</li>
+                <li><strong>ESCALATE:</strong> If unable to respond, escalate immediately</li>
+                <li><strong>FOLLOW-UP:</strong> Continue monitoring until situation is resolved</li>
+            </ul>
+        </div>
+
+        {% if alert_originator %}
+        <p><strong>Alert originated by:</strong> {{ alert_originator }}</p>
+        {% endif %}
+        
+        <p style="color: #dc3545; font-weight: bold; text-align: center; font-size: 18px;">
+            THIS IS AN EMERGENCY - IMMEDIATE ACTION REQUIRED
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong>⚠️ EMERGENCY ALERT SYSTEM ⚠️</strong></p>
+        <p>Alert ID: {{ alert_id|default:"EMERGENCY-001" }} | Time: {{ alert_timestamp }}</p>
+        <p>This is an automated emergency alert from {{ clinic_name }}</p>
+        <p>For technical support: info@xerxez.in</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Registration - Admin Approval Required</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .applicant-info {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .applicant-info h3 {
+            color: #1976d2;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e3f2fd;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #1976d2;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value {
+            margin-top: 5px;
+            font-size: 16px;
+        }
+        .risk-assessment {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+        .risk-assessment h3 {
+            color: #f57c00;
+            margin-top: 0;
+        }
+        .risk-level {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .risk-low { background-color: #4caf50; }
+        .risk-medium { background-color: #ff9800; }
+        .risk-high { background-color: #f44336; }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+        .btn-approve {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-approve:hover {
+            background-color: #218838;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-reject:hover {
+            background-color: #c82333;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .checklist h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .checklist li:before {
+            content: "☐ ";
+            color: #6c757d;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #6c757d;
+            color: white;
+            border-radius: 8px;
+        }
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏥 New Registration Pending</h1>
+        <div class="subtitle">Healthcare Professional Approval Required</div>
+    </div>
+
+    <div class="content">
+        <div class="applicant-info">
+            <h3>👨‍⚕️ Applicant Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">{{ applicant_name }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">{{ applicant_email }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Professional Title</div>
+                    <div class="info-value">{{ professional_title }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Specialization</div>
+                    <div class="info-value">{{ specialization }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">License Number</div>
+                    <div class="info-value">{{ license_number }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">License Authority</div>
+                    <div class="info-value">{{ license_authority }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Experience</div>
+                    <div class="info-value">{{ years_experience }} years</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Current Workplace</div>
+                    <div class="info-value">{{ current_workplace }}</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                <strong>Registration Time:</strong> {{ registration_timestamp }}
+            </p>
+        </div>
+
+        <div class="risk-assessment">
+            <h3>🛡️ Risk Assessment</h3>
+            <p>
+                <span class="risk-level risk-{{ risk_assessment.level|lower }}">
+                    {{ risk_assessment.level }} RISK
+                </span>
+            </p>
+            {% if risk_assessment.factors %}
+            <p><strong>Risk Factors:</strong></p>
+            <ul>
+                {% for factor in risk_assessment.factors %}
+                <li>{{ factor }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <p><strong>Recommendation:</strong> {{ risk_assessment.recommendation }}</p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ approval_actions.approve }}" class="btn btn-approve">
+                ✅ Approve Registration
+            </a>
+            <a href="{{ approval_actions.reject }}" class="btn btn-reject">
+                ❌ Reject Application
+            </a>
+            <a href="{{ approval_actions.request_info }}" class="btn btn-info">
+                📝 Request More Info
+            </a>
+        </div>
+
+        <div class="checklist">
+            <h3>📋 Review Checklist</h3>
+            <ul>
+                {% for item in review_checklist %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745;">
+            <h4 style="color: #155724; margin-top: 0;">🚀 Quick Actions</h4>
+            <p style="margin: 10px 0;">
+                <strong>Admin Panel:</strong> 
+                <a href="{{ admin_panel_url }}" style="color: #007bff; text-decoration: none;">
+                    {{ admin_panel_url }}
+                </a>
+            </p>
+            <p style="margin: 10px 0; font-size: 14px; color: #155724;">
+                Please review this application within 24-48 hours to maintain optimal user experience.
+            </p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>{{ platform_name }}</strong></p>
+        <p style="margin: 5px 0; font-size: 14px;">
+            This is an automated notification. Please do not reply to this email.
+        </p>
+        <p style="margin: 5px 0; font-size: 12px; opacity: 0.8;">
+            © {{ year }} Xerxez Solutions. All rights reserved.
+        </p>
+    </div>
+</body>
+</html>

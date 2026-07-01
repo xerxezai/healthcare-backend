@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 CRITICAL Lab Result Alert</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #dc3545, #bd2130);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .critical-alert {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 6px solid #dc3545;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .patient-info {
+            background: #fff3cd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .test-results {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #dc3545;
+        }
+        .test-results h3 {
+            color: #dc3545;
+            margin-top: 0;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #495057;
+            width: 40%;
+        }
+        .result-value {
+            color: #dc3545;
+            font-weight: bold;
+            width: 30%;
+        }
+        .reference-range {
+            color: #6c757d;
+            font-size: 14px;
+            width: 30%;
+        }
+        .immediate-actions {
+            background: #d4edda;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .urgent-contact {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+            text-align: center;
+        }
+        .action-button {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 10px;
+            text-align: center;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .disclaimer {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚨 CRITICAL LAB RESULT</h1>
+        <p>IMMEDIATE MEDICAL ATTENTION REQUIRED</p>
+    </div>
+
+    <div class="content">
+        <div class="critical-alert">
+            ⚠️ URGENT: Critical laboratory values detected requiring immediate clinical intervention
+        </div>
+
+        <div class="patient-info">
+            <h3>👤 Patient Information</h3>
+            <p><strong>Patient Name:</strong> {{ patient_name }}</p>
+            <p><strong>Patient ID:</strong> {{ patient_id }}</p>
+            <p><strong>Date of Birth:</strong> {{ patient_dob }}</p>
+            <p><strong>Test Date:</strong> {{ test_date }}</p>
+            <p><strong>Report Date:</strong> {{ report_date }}</p>
+        </div>
+
+        <div class="test-results">
+            <h3>🔬 Critical Test Results</h3>
+            <p><strong>Test Name:</strong> {{ test_name }}</p>
+            <p><strong>Lab Order ID:</strong> {{ lab_order_id }}</p>
+            
+            {% for result in critical_results %}
+            <div class="result-row">
+                <span class="result-label">{{ result.parameter }}</span>
+                <span class="result-value">{{ result.value }} {{ result.unit }}</span>
+                <span class="reference-range">Normal: {{ result.reference_range }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="immediate-actions">
+            <h4>🏥 IMMEDIATE ACTIONS REQUIRED</h4>
+            <ol>
+                <li><strong>Contact Patient Immediately:</strong> Call patient at {{ patient_phone }}</li>
+                <li><strong>Clinical Assessment:</strong> Schedule immediate evaluation</li>
+                <li><strong>Repeat Testing:</strong> Consider confirmatory testing if indicated</li>
+                <li><strong>Specialist Referral:</strong> Consult appropriate specialist if needed</li>
+                <li><strong>Documentation:</strong> Document all actions taken in patient record</li>
+            </ol>
+        </div>
+
+        <div class="urgent-contact">
+            <h4>📞 Emergency Contacts</h4>
+            <p><strong>Ordering Physician:</strong> {{ ordering_physician }}</p>
+            <p><strong>Patient Phone:</strong> {{ patient_phone }}</p>
+            <p><strong>Emergency Contact:</strong> {{ emergency_contact }}</p>
+            
+            <a href="tel:{{ patient_phone }}" class="action-button">📞 Call Patient Now</a>
+            <a href="{{ patient_chart_url }}" class="action-button">📋 View Patient Chart</a>
+        </div>
+
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+            <h4>⏰ Time Sensitivity</h4>
+            <p><strong>Result Timestamp:</strong> {{ result_timestamp }}</p>
+            <p><strong>Critical Alert Sent:</strong> {{ alert_timestamp }}</p>
+            <p><strong>Response Required By:</strong> {{ response_deadline }}</p>
+        </div>
+
+        <div class="disclaimer">
+            <h4>⚠️ IMPORTANT MEDICAL NOTICE</h4>
+            <p><strong>This is a critical laboratory result requiring immediate medical attention.</strong></p>
+            <ul>
+                <li>Patient must be contacted within 1 hour of this notification</li>
+                <li>All actions must be documented in the patient's medical record</li>
+                <li>Follow institutional protocols for critical value reporting</li>
+                <li>If unable to reach patient, contact emergency contact immediately</li>
+            </ul>
+        </div>
+
+        <p><strong>This critical alert was generated automatically by the Healthcare Platform Laboratory Information System.</strong></p>
+        
+        <p>Best regards,<br>
+        <strong>{{ platform_name }} Laboratory Services</strong></p>
+    </div>
+
+    <div class="footer">
+        <p><strong>CRITICAL ALERT - DO NOT IGNORE</strong></p>
+        <p>This notification was sent to: {{ recipient_email }}</p>
+        <p>For technical support: {{ support_email }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Reminder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .appointment-details {
+            background: #e3f2fd;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .appointment-details h3 {
+            color: #1976D2;
+            margin-top: 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #495057;
+            width: 40%;
+        }
+        .value {
+            color: #212529;
+            width: 58%;
+            text-align: right;
+        }
+        .important-notes {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .preparation-tips {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .reminder-highlight {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📅 Appointment Reminder</h1>
+        <p>Healthcare Platform</p>
+    </div>
+
+    <div class="content">
+        <h2>Hello {{ patient_name }},</h2>
+        
+        <div class="reminder-highlight">
+            🔔 You have an upcoming appointment tomorrow!
+        </div>
+
+        <p>This is a friendly reminder about your scheduled appointment. Please review the details below:</p>
+
+        <div class="appointment-details">
+            <h3>📋 Appointment Details</h3>
+            
+            <div class="detail-row">
+                <span class="label">👨‍⚕️ Doctor:</span>
+                <span class="value">Dr. {{ doctor_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📅 Date:</span>
+                <span class="value">{{ appointment_date }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">🕒 Time:</span>
+                <span class="value">{{ appointment_time }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">🏥 Clinic:</span>
+                <span class="value">{{ clinic_name }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">📍 Address:</span>
+                <span class="value">{{ clinic_address }}</span>
+            </div>
+        </div>
+
+        <div class="important-notes">
+            <h4>⚠️ Important Reminders</h4>
+            <ul>
+                <li><strong>Arrival Time:</strong> Please arrive 15 minutes before your scheduled appointment</li>
+                <li><strong>Documents:</strong> Bring a valid ID and insurance card (if applicable)</li>
+                <li><strong>Medical History:</strong> Bring any relevant medical records or test results</li>
+                <li><strong>Medications:</strong> List of current medications and dosages</li>
+                <li><strong>Mask Policy:</strong> Face masks may be required as per clinic policy</li>
+            </ul>
+        </div>
+
+        <div class="preparation-tips">
+            <h4>📝 Before Your Visit</h4>
+            <ul>
+                <li>Prepare a list of questions or concerns you want to discuss</li>
+                <li>Note any symptoms you've been experiencing</li>
+                <li>Bring a list of allergies or adverse reactions to medications</li>
+                <li>Wear comfortable clothing appropriate for examination</li>
+                <li>Arrange transportation if you're receiving procedures that may affect driving</li>
+            </ul>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3;">
+            <h4>📞 Need to Reschedule?</h4>
+            <p>If you need to reschedule or cancel your appointment, please contact the clinic as soon as possible:</p>
+            <p><strong>Clinic Phone:</strong> Contact clinic directly</p>
+            <p><strong>Online:</strong> Log into your patient portal</p>
+            <p><strong>Notice:</strong> Please provide at least 24 hours notice for cancellations</p>
+        </div>
+
+        <div class="contact-info">
+            <h4>💬 Questions or Concerns?</h4>
+            <p>If you have any questions about your appointment or need to make changes, please contact:</p>
+            <p><strong>Clinic:</strong> {{ clinic_name }}</p>
+            <p><strong>Address:</strong> {{ clinic_address }}</p>
+        </div>
+
+        <p>We look forward to seeing you at your appointment!</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ clinic_name }} Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated appointment reminder from Healthcare Platform.</p>
+        <p>Please do not reply to this email. Contact the clinic directly for appointment changes.</p>
+    </div>
+</body>
+</html>

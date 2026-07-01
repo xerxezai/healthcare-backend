@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Notification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #6f42c1, #495057);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .compliance-alert {
+            background: #e3f2fd;
+            color: #1976D2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+            text-align: center;
+            font-weight: bold;
+        }
+        .details-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        .details-section h3 {
+            color: #6f42c1;
+            margin-top: 0;
+        }
+        .action-required {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .compliance-steps {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #28a745;
+        }
+        .button {
+            display: inline-block;
+            background: #6f42c1;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .legal-notice {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #dc3545;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Compliance Notification</h1>
+        <p>{{ compliance_type }} - Healthcare Platform</p>
+    </div>
+
+    <div class="content">
+        <div class="compliance-alert">
+            📋 Important {{ compliance_type }} Compliance Notice
+        </div>
+
+        <p>This notification is being sent to inform you about important compliance requirements and updates related to {{ compliance_type }} regulations.</p>
+
+        <div class="details-section">
+            <h3>📝 Compliance Details</h3>
+            <p><strong>Compliance Type:</strong> {{ compliance_type }}</p>
+            {% for key, value in details.items %}
+                <p><strong>{{ key|title }}:</strong> {{ value }}</p>
+            {% endfor %}
+        </div>
+
+        {% if compliance_type == "GDPR" %}
+        <div class="action-required">
+            <h4>🇪🇺 GDPR Compliance Requirements</h4>
+            <ul>
+                <li><strong>Data Protection:</strong> Ensure all patient data is properly protected and encrypted</li>
+                <li><strong>Consent Management:</strong> Verify that proper consent has been obtained for data processing</li>
+                <li><strong>Right to Access:</strong> Patients can request access to their personal data</li>
+                <li><strong>Right to Erasure:</strong> Patients can request deletion of their personal data</li>
+                <li><strong>Data Portability:</strong> Patients can request their data in a portable format</li>
+                <li><strong>Breach Notification:</strong> Report any data breaches within 72 hours</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if compliance_type == "HIPAA" %}
+        <div class="action-required">
+            <h4>🇺🇸 HIPAA Compliance Requirements</h4>
+            <ul>
+                <li><strong>PHI Protection:</strong> Safeguard all Protected Health Information (PHI)</li>
+                <li><strong>Minimum Necessary:</strong> Only access minimum necessary patient information</li>
+                <li><strong>Administrative Safeguards:</strong> Implement proper administrative procedures</li>
+                <li><strong>Physical Safeguards:</strong> Secure physical access to patient data</li>
+                <li><strong>Technical Safeguards:</strong> Use appropriate technical controls for data access</li>
+                <li><strong>Business Associate Agreements:</strong> Ensure proper agreements with third parties</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="compliance-steps">
+            <h4>✅ Required Actions</h4>
+            <ol>
+                <li><strong>Review Platform Policies:</strong> Read updated privacy and compliance policies</li>
+                <li><strong>Update User Agreements:</strong> Accept any new terms and conditions</li>
+                <li><strong>Training Completion:</strong> Complete any required compliance training modules</li>
+                <li><strong>Documentation Review:</strong> Review and acknowledge compliance documentation</li>
+                <li><strong>Audit Preparation:</strong> Ensure all required compliance measures are in place</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="{{ compliance_url }}" class="button">Access Compliance Center</a>
+        </div>
+
+        <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196F3;">
+            <h4>📅 Important Deadlines</h4>
+            <p><strong>Action Required By:</strong> Please complete all required actions within 30 days</p>
+            <p><strong>Compliance Review:</strong> Regular compliance audits will be conducted</p>
+            <p><strong>Updates:</strong> Stay informed about compliance requirement changes</p>
+        </div>
+
+        <div class="legal-notice">
+            <h4>⚖️ Legal Notice</h4>
+            <p>Compliance with healthcare regulations is mandatory and failure to comply may result in:</p>
+            <ul>
+                <li>Account suspension or termination</li>
+                <li>Legal and regulatory penalties</li>
+                <li>Professional license implications</li>
+                <li>Financial penalties and fines</li>
+            </ul>
+        </div>
+
+        <div class="contact-info">
+            <h4>💬 Compliance Support</h4>
+            <p>If you have questions about compliance requirements or need assistance:</p>
+            <p><strong>Compliance Team:</strong> {{ support_email }}</p>
+            <p><strong>Response Time:</strong> Within 24 hours</p>
+            <p><strong>Legal Support:</strong> Available for complex compliance questions</p>
+        </div>
+
+        <p>Thank you for your commitment to maintaining the highest standards of healthcare compliance and patient privacy.</p>
+        
+        <p>Best regards,<br>
+        <strong>{{ platform_name }} Compliance Team</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>This is an automated compliance notification from {{ platform_name }}.</p>
+        <p>For compliance-related questions, contact {{ support_email }}</p>
+        <p>This notification is required by law and cannot be unsubscribed from.</p>
+    </div>
+</body>
+</html>

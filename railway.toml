@@ -1,0 +1,14 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage_emergency.py runserver 0.0.0.0:8080"
+healthcheckPath = "/health/"
+healthcheckTimeout = 300
+healthcheckInterval = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[variables]
+PYTHONPATH = "/app/backend"
+DJANGO_SETTINGS_MODULE = "backend.settings_emergency"
