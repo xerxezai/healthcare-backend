@@ -175,10 +175,10 @@ CORS_ALLOWED_HEADERS = [
 
 # Session and CSRF settings
 SESSION_COOKIE_HTTPONLY = True
-
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# Browsers require the Secure flag whenever SameSite=None, or they silently
+# drop the cookie - this must track DEBUG/HTTPS, not be hardcoded False.
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = 'None' if not DEBUG else 'Lax'  # 'None' for cross-origin in production
 CSRF_COOKIE_HTTPONLY = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
