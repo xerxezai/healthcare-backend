@@ -146,13 +146,7 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         password = attrs.get('password')
-        recaptcha_token = attrs.get('recaptcha_token', '')
-        
         print(f"Login attempt for {email}")
-
-        # Validate reCAPTCHA (skip in development mode)
-        if not settings.DEBUG and not self.verify_recaptcha(recaptcha_token):
-            raise serializers.ValidationError(_('reCAPTCHA verification failed. Please try again.'), code='recaptcha_failed')
 
         if email and password:
             try:
