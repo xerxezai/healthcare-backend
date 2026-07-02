@@ -207,6 +207,11 @@ AUTHENTICATION_BACKENDS = [
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # Actual login (hospital.auth_views.login_api) uses Django session
+        # cookies, not real JWTs - without this, DRF's request.user never
+        # falls back to the session and every standard IsAuthenticated view
+        # 401s for logged-in users.
+        "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",  # Default to requiring authentication
