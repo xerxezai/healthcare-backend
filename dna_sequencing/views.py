@@ -8,12 +8,88 @@ Main views for DNA sequencing dashboard and analysis
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 import json
 import random
 from datetime import datetime, timedelta
 import logging
 
+from .models import DNASample, DNAVariant
+
 logger = logging.getLogger(__name__)
+
+# Reference variants used to seed simulated (but consistent, per-sample)
+# analysis results, since there is no real sequencing pipeline behind this.
+_KNOWN_GENE_VARIANTS = [
+    {'chromosome': 'chr17', 'position': 43094124, 'ref': 'G', 'alt': 'A', 'gene': 'BRCA1',
+     'consequence': 'missense_variant', 'clinical_significance': 'Pathogenic', 'dbsnp_id': 'rs80357382', 'cosmic_id': 'COSM5739'},
+    {'chromosome': 'chr13', 'position': 32936732, 'ref': 'T', 'alt': 'C', 'gene': 'BRCA2',
+     'consequence': 'missense_variant', 'clinical_significance': 'Pathogenic', 'dbsnp_id': 'rs81002825', 'cosmic_id': 'COSM6904'},
+    {'chromosome': 'chr7', 'position': 117559590, 'ref': 'C', 'alt': 'T', 'gene': 'CFTR',
+     'consequence': 'stop_gained', 'clinical_significance': 'Pathogenic', 'dbsnp_id': 'rs113993960', 'cosmic_id': ''},
+    {'chromosome': 'chr3', 'position': 37034946, 'ref': 'A', 'alt': 'G', 'gene': 'MLH1',
+     'consequence': 'missense_variant', 'clinical_significance': 'Likely pathogenic', 'dbsnp_id': 'rs63750231', 'cosmic_id': ''},
+    {'chromosome': 'chr2', 'position': 47630304, 'ref': 'G', 'alt': 'A', 'gene': 'MSH2',
+     'consequence': 'splice_donor_variant', 'clinical_significance': 'Likely pathogenic', 'dbsnp_id': 'rs63750969', 'cosmic_id': ''},
+    {'chromosome': 'chr19', 'position': 11224304, 'ref': 'C', 'alt': 'T', 'gene': 'LDLR',
+     'consequence': 'missense_variant', 'clinical_significance': 'Uncertain significance', 'dbsnp_id': 'rs137929305', 'cosmic_id': ''},
+    {'chromosome': 'chr11', 'position': 47364249, 'ref': 'T', 'alt': 'C', 'gene': 'MYBPC3',
+     'consequence': 'missense_variant', 'clinical_significance': 'Uncertain significance', 'dbsnp_id': 'rs397516037', 'cosmic_id': ''},
+    {'chromosome': 'chr1', 'position': 11856378, 'ref': 'G', 'alt': 'A', 'gene': 'MTHFR',
+     'consequence': 'missense_variant', 'clinical_significance': 'Benign', 'dbsnp_id': 'rs1801133', 'cosmic_id': ''},
+]
+
+
+def _generate_simulated_analysis(sample_id, sequencing_type):
+    """Deterministically generate plausible quality metrics + variants for a
+    sample, seeded by its sample_id so results are stable across refetches."""
+    rng = random.Random(sample_id)
+
+    total_reads_m = rng.randint(400, 900)
+    mapping_rate = round(rng.uniform(94.0, 99.5), 1)
+    quality_score = round(rng.uniform(90.0, 99.5), 1)
+    mapped_reads_m = round(total_reads_m * mapping_rate / 100)
+
+    variants = []
+    for ref in _KNOWN_GENE_VARIANTS:
+        if rng.random() < 0.7:  # not every sample carries every reference variant
+            variants.append({
+                **ref,
+                'variant_type': 'SNV',
+                'impact': 'HIGH' if ref['clinical_significance'] in ('Pathogenic', 'Likely pathogenic') else 'MODERATE',
+                'allele_frequency': round(rng.uniform(0.0001, 0.01), 4),
+                'coverage': rng.randint(30, 90),
+                'quality': round(rng.uniform(90.0, 99.9), 1),
+                'genotype': rng.choice(['het', 'hom']),
+            })
+
+    pathogenic = sum(1 for v in variants if v['clinical_significance'] == 'Pathogenic')
+    likely_pathogenic = sum(1 for v in variants if v['clinical_significance'] == 'Likely pathogenic')
+    vus = sum(1 for v in variants if v['clinical_significance'] == 'Uncertain significance')
+    benign = sum(1 for v in variants if v['clinical_significance'] == 'Benign')
+
+    total_variants = rng.randint(3800000, 4900000)
+    snvs = round(total_variants * 0.95)
+    indels = total_variants - snvs
+
+    return {
+        'coverage': f"{rng.randint(30, 60)}x",
+        'quality_score': quality_score,
+        'total_reads': f"{total_reads_m / 1000:.1f}B" if total_reads_m >= 1000 else f"{total_reads_m}M",
+        'mapped_reads': f"{mapped_reads_m / 1000:.1f}B" if mapped_reads_m >= 1000 else f"{mapped_reads_m}M",
+        'mapping_rate': mapping_rate,
+        'total_variants': total_variants,
+        'snvs': snvs,
+        'indels': indels,
+        'high_impact': pathogenic + likely_pathogenic,
+        'moderate_impact': vus,
+        'low_impact': total_variants - (pathogenic + likely_pathogenic + vus + benign),
+        'pathogenic': pathogenic,
+        'likely_pathogenic': likely_pathogenic,
+        'vus': vus,
+        'benign': benign,
+        'variants': variants,
+    }
 
 @require_http_methods(["GET"])
 def get_dna_sequencing_dashboard(request):
@@ -108,44 +184,79 @@ def get_dna_sequencing_dashboard(request):
 
 @require_http_methods(["GET"])
 def get_genome_analysis(request):
-    """Get genome analysis data"""
+    """Get genome analysis data for a specific sample (?sample_id=...),
+    falling back to the most recently analyzed sample if none is given."""
     try:
+        sample_id = request.GET.get('sample_id')
+
+        if sample_id:
+            sample = DNASample.objects.filter(sample_id=sample_id).first()
+            if not sample:
+                return JsonResponse({
+                    'status': 'error',
+                    'error': f"No analysis found for sample_id '{sample_id}'"
+                }, status=404)
+        else:
+            sample = DNASample.objects.order_by('-created_at').first()
+            if not sample:
+                return JsonResponse({
+                    'status': 'error',
+                    'error': 'No analyzed samples found'
+                }, status=404)
+
+        top_variants = [
+            {
+                'id': v.id,
+                'chromosome': v.chromosome,
+                'position': v.position,
+                'ref': v.ref,
+                'alt': v.alt,
+                'gene': v.gene,
+                'variant_type': v.variant_type,
+                'impact': v.impact,
+                'consequence': v.consequence,
+                'clinical_significance': v.clinical_significance,
+                'allele_frequency': v.allele_frequency,
+                'coverage': v.coverage,
+                'quality': v.quality,
+                'genotype': v.genotype,
+                'dbsnp_id': v.dbsnp_id,
+                'cosmic_id': v.cosmic_id,
+            }
+            for v in sample.variant_records.all()
+        ]
+
         analysis_data = {
             'sample_info': {
-                'sample_id': 'DNA-2025-0903',
-                'patient_name': 'John Doe',
-                'sequencing_type': 'Whole Genome Sequencing',
-                'coverage': '30x',
-                'quality_score': 96.2,
-                'total_reads': '2.8B',
-                'mapped_reads': '2.7B',
-                'mapping_rate': 96.4
+                'sample_id': sample.sample_id,
+                'patient_name': sample.patient_name,
+                'sequencing_type': sample.sequencing_type,
+                'coverage': sample.coverage,
+                'quality_score': sample.quality_score,
+                'total_reads': sample.total_reads,
+                'mapped_reads': sample.mapped_reads,
+                'mapping_rate': sample.mapping_rate,
             },
             'variant_summary': {
-                'total_variants': 4892367,
-                'snvs': 4657123,
-                'indels': 235244,
-                'high_impact': 23,
-                'moderate_impact': 8456,
-                'low_impact': 245678,
-                'pathogenic': 12,
-                'likely_pathogenic': 34,
-                'vus': 156,
-                'benign': 3456789
+                'total_variants': sample.total_variants,
+                'snvs': sample.snvs,
+                'indels': sample.indels,
+                'high_impact': sample.high_impact,
+                'moderate_impact': sample.moderate_impact,
+                'low_impact': sample.low_impact,
+                'pathogenic': sample.pathogenic,
+                'likely_pathogenic': sample.likely_pathogenic,
+                'vus': sample.vus,
+                'benign': sample.benign,
             },
-            'ai_enhanced_results': {
-                'deepvariant_confidence': 99.7,
-                'gatk_filtered': 95423,
-                'ai_validated_variants': 4796944,
-                'machine_learning_annotations': 4892367
-            }
+            'top_variants': top_variants,
         }
-        
+
         return JsonResponse({
             'status': 'success',
             'data': analysis_data
         })
-        
+
     except Exception as e:
         logger.error(f"Genome analysis error: {str(e)}")
         return JsonResponse({
@@ -157,56 +268,76 @@ def get_genome_analysis(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def start_dna_analysis(request):
-    """Start a new DNA sequencing analysis"""
+    """Start a new DNA sequencing analysis and persist it with generated results"""
     try:
         data = json.loads(request.body)
-        
+
         # Extract analysis parameters
         sample_id = data.get('sample_id')
-        patient_id = data.get('patient_id')
+        patient_id = data.get('patient_id')  # actually the patient's name, per the upload form
         analysis_method = data.get('analysis_method')
-        
+        analysis_type = data.get('analysis_type', '')
+
         # Validate required fields
         if not all([sample_id, patient_id, analysis_method]):
             return JsonResponse({
                 'success': False,
                 'message': 'Missing required fields: sample_id, patient_id, analysis_method'
             }, status=400)
-        
+
         # Generate a unique analysis ID
         analysis_id = f"ANALYSIS-{datetime.now().strftime('%Y%m%d%H%M%S')}-{random.randint(1000, 9999)}"
-        
-        # Simulate analysis initialization
-        analysis_config = {
-            'analysis_id': analysis_id,
-            'sample_id': sample_id,
-            'patient_id': patient_id,
-            'analysis_method': analysis_method,
-            'status': 'queued',
-            'priority': data.get('priority', 'normal'),
-            'estimated_completion': (datetime.now() + timedelta(hours=24)).isoformat(),
-            'created_at': datetime.now().isoformat(),
-            'config': {k: v for k, v in data.items() if k not in ['sample_id', 'patient_id', 'analysis_method']}
-        }
-        
-        # Log the analysis start
+
+        # Generate consistent simulated results for this sample (no real
+        # sequencing pipeline exists behind this platform yet)
+        generated = _generate_simulated_analysis(sample_id, analysis_method)
+
+        user = request.user if getattr(request, 'user', None) and request.user.is_authenticated else None
+
+        sample, _created = DNASample.objects.update_or_create(
+            sample_id=sample_id,
+            defaults={
+                'analysis_id': analysis_id,
+                'patient_name': patient_id,
+                'sequencing_type': analysis_method,
+                'analysis_type': analysis_type,
+                'status': 'completed',
+                'coverage': generated['coverage'],
+                'quality_score': generated['quality_score'],
+                'total_reads': generated['total_reads'],
+                'mapped_reads': generated['mapped_reads'],
+                'mapping_rate': generated['mapping_rate'],
+                'total_variants': generated['total_variants'],
+                'snvs': generated['snvs'],
+                'indels': generated['indels'],
+                'high_impact': generated['high_impact'],
+                'moderate_impact': generated['moderate_impact'],
+                'low_impact': generated['low_impact'],
+                'pathogenic': generated['pathogenic'],
+                'likely_pathogenic': generated['likely_pathogenic'],
+                'vus': generated['vus'],
+                'benign': generated['benign'],
+                'created_by': user,
+                'completed_at': timezone.now(),
+            }
+        )
+
+        # Replace any previous variant records for this sample (re-analysis case)
+        sample.variant_records.all().delete()
+        DNAVariant.objects.bulk_create([
+            DNAVariant(sample=sample, **v) for v in generated['variants']
+        ])
+
         logger.info(f"Started DNA analysis: {analysis_id} for sample {sample_id}")
-        
-        # In a real implementation, this would:
-        # 1. Queue the analysis job
-        # 2. Store in database
-        # 3. Initialize pipeline
-        # 4. Send notifications
-        
+
         return JsonResponse({
             'success': True,
             'message': f'Analysis {analysis_id} started successfully',
             'analysis_id': analysis_id,
             'sample_id': sample_id,
-            'estimated_completion': analysis_config['estimated_completion'],
-            'status': 'queued'
+            'status': 'completed'
         })
-        
+
     except json.JSONDecodeError:
         return JsonResponse({
             'success': False,
