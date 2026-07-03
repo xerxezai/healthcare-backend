@@ -110,6 +110,55 @@ class DoctorViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(specialization=specialization)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        """
+        Doctor.user is a required OneToOneField but DoctorSerializer treats
+        it as read-only, so a plain ModelViewSet.create() has no way to
+        satisfy that FK and would fail at the database level. Create the
+        linked user account (email/password/first_name/last_name/role) and
+        the doctor profile together in one transaction.
+        """
+        from django.contrib.auth import get_user_model
+        from django.db import transaction, IntegrityError
+
+        User = get_user_model()
+        data = request.data
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return Response(
+                {'error': 'email and password are required to create a doctor account'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        doctor_fields = {
+            key: data.get(key) for key in [
+                'license_number', 'specialization', 'qualification',
+                'years_experience', 'education', 'certifications',
+                'hospital_affiliation', 'consultation_fee',
+                'is_available_emergency', 'bio'
+            ] if key in data
+        }
+        if 'profile_picture' in request.FILES:
+            doctor_fields['profile_picture'] = request.FILES['profile_picture']
+
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    email=email,
+                    password=password,
+                    first_name=data.get('first_name', ''),
+                    last_name=data.get('last_name', ''),
+                    role='doctor',
+                )
+                doctor = Doctor.objects.create(user=user, **doctor_fields)
+        except IntegrityError as e:
+            return Response({'error': f'Could not create doctor: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(doctor)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     @action(detail=True, methods=['get'])
     def appointments(self, request, pk=None):
         doctor = self.get_object()
