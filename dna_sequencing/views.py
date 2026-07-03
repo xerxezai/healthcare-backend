@@ -351,6 +351,141 @@ def start_dna_analysis(request):
         }, status=500)
 
 
+def _generate_sample_id():
+    return f"DNA-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
+
+
+def _parse_date(value):
+    if not value:
+        return None
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').date()
+    except (ValueError, TypeError):
+        return None
+
+
+def _build_sample_from_payload(payload):
+    """Create (but don't save) a DNASample from a single sample's submitted
+    fields, raising ValueError on missing required data."""
+    patient_name = payload.get('patient_name')
+    if not patient_name:
+        raise ValueError('patient_name is required')
+
+    sample_id = payload.get('sample_id') or _generate_sample_id()
+
+    return DNASample(
+        sample_id=sample_id,
+        patient_name=patient_name,
+        patient_id=payload.get('patient_id', ''),
+        sample_type=payload.get('sample_type', ''),
+        sequencing_type=payload.get('sequencing_type') or payload.get('analysis_method', ''),
+        analysis_type=payload.get('analysis_type', ''),
+        priority=payload.get('priority', 'normal'),
+        platform=payload.get('platform', ''),
+        technician=payload.get('technician', ''),
+        notes=payload.get('notes', ''),
+        collection_date=_parse_date(payload.get('collection_date')),
+        received_date=_parse_date(payload.get('received_date')) or timezone.now().date(),
+        status='received',
+    )
+
+
+@require_http_methods(["GET"])
+def list_samples(request):
+    """List all registered DNA samples for the Sample Management page"""
+    try:
+        samples = DNASample.objects.all()
+        return JsonResponse([s.to_summary_dict() for s in samples], safe=False)
+    except Exception as e:
+        logger.error(f"List samples error: {str(e)}")
+        return JsonResponse({'error': f'Failed to list samples: {str(e)}'}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def register_sample(request):
+    """Register a single new sample (New Sample button)"""
+    try:
+        data = json.loads(request.body)
+        sample = _build_sample_from_payload(data)
+        sample.full_clean(exclude=['created_by'])
+        sample.save()
+        return JsonResponse({'success': True, 'sample': sample.to_summary_dict()}, status=201)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON format'}, status=400)
+    except ValueError as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=400)
+    except Exception as e:
+        logger.error(f"Register sample error: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Failed to register sample: {str(e)}'}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def batch_register_samples(request):
+    """Register multiple samples at once (Batch Upload button)"""
+    try:
+        data = json.loads(request.body)
+        entries = data.get('samples', [])
+        if not isinstance(entries, list) or not entries:
+            return JsonResponse({'success': False, 'message': 'No samples provided'}, status=400)
+
+        created = []
+        errors = []
+        for index, entry in enumerate(entries):
+            try:
+                sample = _build_sample_from_payload(entry)
+                sample.full_clean(exclude=['created_by'])
+                sample.save()
+                created.append(sample.to_summary_dict())
+            except Exception as row_error:
+                errors.append({'row': index + 1, 'error': str(row_error)})
+
+        return JsonResponse({
+            'success': len(created) > 0,
+            'created_count': len(created),
+            'error_count': len(errors),
+            'created': created,
+            'errors': errors,
+        }, status=201 if created else 400)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON format'}, status=400)
+    except Exception as e:
+        logger.error(f"Batch register error: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Batch upload failed: {str(e)}'}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def update_sample_status(request, sample_pk):
+    """Update a sample's status (e.g. Start Processing / Put On Hold)"""
+    try:
+        sample = DNASample.objects.filter(pk=sample_pk).first()
+        if not sample:
+            return JsonResponse({'success': False, 'message': 'Sample not found'}, status=404)
+
+        data = json.loads(request.body)
+        new_status = data.get('status')
+        valid_statuses = dict(DNASample.STATUS_CHOICES)
+        if new_status not in valid_statuses:
+            return JsonResponse({
+                'success': False,
+                'message': f"Invalid status '{new_status}'. Must be one of: {', '.join(valid_statuses)}"
+            }, status=400)
+
+        sample.status = new_status
+        if new_status == 'completed' and not sample.completed_at:
+            sample.completed_at = timezone.now()
+        sample.save(update_fields=['status', 'completed_at'])
+
+        return JsonResponse({'success': True, 'sample': sample.to_summary_dict()})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON format'}, status=400)
+    except Exception as e:
+        logger.error(f"Update sample status error: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Failed to update status: {str(e)}'}, status=500)
+
+
 # Soft-coded export functionality
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -359,23 +494,54 @@ def export_pdf_report(request):
     try:
         data = json.loads(request.body)
         sample_id = data.get('sample_id', 'unknown')
-        
+
         # In a real implementation, this would generate a proper PDF
         # For now, return a simple text-based report
         from django.http import HttpResponse
-        
-        report_content = f"""GENOME ANALYSIS REPORT
+
+        sample = DNASample.objects.filter(sample_id=sample_id).first()
+        if sample:
+            variant_lines = "\n".join(
+                f"  - {v.gene} {v.chromosome}:{v.position} {v.ref}>{v.alt} "
+                f"({v.clinical_significance}, {v.impact} impact)"
+                for v in sample.variant_records.all()
+            ) or "  (none recorded)"
+
+            report_content = f"""GENOME ANALYSIS REPORT
+Sample ID: {sample.sample_id}
+Patient: {sample.patient_name}
+Status: {sample.status_display}
+Sequencing Type: {sample.sequencing_type}
+Coverage: {sample.coverage}
+Quality Score: {sample.quality_score}
+Total Reads: {sample.total_reads}
+Mapped Reads: {sample.mapped_reads}
+Mapping Rate: {sample.mapping_rate}
+
+Variant Summary:
+  Total Variants: {sample.total_variants}
+  Pathogenic: {sample.pathogenic}
+  Likely Pathogenic: {sample.likely_pathogenic}
+  VUS: {sample.vus}
+  Benign: {sample.benign}
+
+High-Priority Variants:
+{variant_lines}
+
+Generated: {datetime.now().isoformat()}
+"""
+        else:
+            report_content = f"""GENOME ANALYSIS REPORT
 Sample ID: {sample_id}
 Generated: {datetime.now().isoformat()}
 
-This is a demo PDF export. In production, this would be a proper PDF file
-generated using libraries like ReportLab or WeasyPrint.
+No stored analysis data was found for this sample.
 """
-        
+
         response = HttpResponse(report_content, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename="{sample_id}_report.txt"'
         return response
-        
+
     except Exception as e:
         logger.error(f"PDF export error: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)

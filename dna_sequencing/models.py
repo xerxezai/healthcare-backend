@@ -4,18 +4,59 @@ from django.db import models
 
 class DNASample(models.Model):
     STATUS_CHOICES = [
+        ('received', 'Received'),
         ('queued', 'Queued'),
         ('processing', 'Processing'),
+        ('sequencing', 'Sequencing'),
+        ('analysis', 'Analysis'),
         ('completed', 'Completed'),
-        ('failed', 'Failed'),
+        ('failed', 'QC Failed'),
+        ('on_hold', 'On Hold'),
+    ]
+    STATUS_DISPLAY = {
+        'received': 'Received',
+        'queued': 'Received',
+        'processing': 'Processing',
+        'sequencing': 'Sequencing',
+        'analysis': 'Analysis',
+        'completed': 'Complete',
+        'failed': 'QC Failed',
+        'on_hold': 'On Hold',
+    }
+    STATUS_PROGRESS = {
+        'received': 15,
+        'queued': 15,
+        'processing': 40,
+        'sequencing': 65,
+        'analysis': 85,
+        'completed': 100,
+        'failed': 30,
+        'on_hold': 50,
+    }
+    PRIORITY_CHOICES = [
+        ('urgent', 'Urgent'),
+        ('high', 'High'),
+        ('normal', 'Normal'),
+        ('low', 'Low'),
     ]
 
     sample_id = models.CharField(max_length=100, unique=True)
     analysis_id = models.CharField(max_length=100, blank=True)
     patient_name = models.CharField(max_length=200)
+    patient_id = models.CharField(max_length=100, blank=True)
+    sample_type = models.CharField(max_length=50, blank=True)  # Blood / Saliva / Tissue
     sequencing_type = models.CharField(max_length=100, blank=True)
     analysis_type = models.CharField(max_length=100, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='queued')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='received')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='normal')
+
+    platform = models.CharField(max_length=100, blank=True)
+    technician = models.CharField(max_length=100, blank=True)
+    notes = models.TextField(blank=True)
+    failure_reason = models.TextField(blank=True)
+    collection_date = models.DateField(null=True, blank=True)
+    received_date = models.DateField(null=True, blank=True)
+    estimated_completion = models.DateTimeField(null=True, blank=True)
 
     coverage = models.CharField(max_length=20, blank=True)
     quality_score = models.FloatField(null=True, blank=True)
@@ -45,6 +86,37 @@ class DNASample(models.Model):
 
     def __str__(self):
         return f"{self.sample_id} ({self.patient_name})"
+
+    @property
+    def progress(self):
+        return self.STATUS_PROGRESS.get(self.status, 0)
+
+    @property
+    def status_display(self):
+        return self.STATUS_DISPLAY.get(self.status, self.status)
+
+    def to_summary_dict(self):
+        return {
+            'id': self.id,
+            'sample_id': self.sample_id,
+            'patient_name': self.patient_name,
+            'patient_id': self.patient_id,
+            'status': self.status_display,
+            'priority': self.get_priority_display(),
+            'sample_type': self.sample_type,
+            'sequencing_type': self.sequencing_type,
+            'analysis_type': self.analysis_type,
+            'collection_date': self.collection_date.isoformat() if self.collection_date else None,
+            'received_date': self.received_date.isoformat() if self.received_date else None,
+            'progress': self.progress,
+            'quality_score': self.quality_score,
+            'platform': self.platform,
+            'technician': self.technician,
+            'estimated_completion': self.estimated_completion.isoformat() if self.estimated_completion else None,
+            'completion_date': self.completed_at.date().isoformat() if self.completed_at else None,
+            'notes': self.notes,
+            'failure_reason': self.failure_reason,
+        }
 
 
 class DNAVariant(models.Model):

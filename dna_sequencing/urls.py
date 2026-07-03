@@ -16,7 +16,14 @@ urlpatterns = [
     path('api/dashboard/', views.get_dna_sequencing_dashboard, name='dashboard'),
     path('api/analysis/', views.get_genome_analysis, name='analysis'),
     path('api/start-analysis/', views.start_dna_analysis, name='start_analysis'),
-    
+
+    # Sample Management endpoints
+    path('api/samples/', views.list_samples, name='list_samples'),
+    path('api/samples/register/', views.register_sample, name='register_sample'),
+    path('api/samples/batch/', views.batch_register_samples, name='batch_register_samples'),
+    path('api/samples/<int:sample_pk>/status/', views.update_sample_status, name='update_sample_status'),
+
+
     # Export endpoints (soft-coded)
     path('api/export/pdf/', views.export_pdf_report, name='export_pdf'),
     path('api/export/excel/', views.export_excel_report, name='export_excel'),
