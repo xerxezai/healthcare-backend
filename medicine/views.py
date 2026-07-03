@@ -37,7 +37,7 @@ from .serializers import (
 class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
-    permission_classes = [AllowAny]  # Temporarily allow unauthenticated access for testing
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = Patient.objects.all()
@@ -50,6 +50,58 @@ class PatientViewSet(viewsets.ModelViewSet):
                 Q(phone__icontains=search)
             )
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        """
+        Patient.user is a required OneToOneField but PatientSerializer treats
+        it as read-only, so a plain ModelViewSet.create() has no way to
+        satisfy that FK. Create the linked user account and patient record
+        together, auto-generating a unique patient_id.
+        """
+        import uuid
+        from django.contrib.auth import get_user_model
+        from django.db import transaction, IntegrityError
+
+        User = get_user_model()
+        data = request.data
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return Response(
+                {'error': 'email and password are required to create a patient account'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        patient_fields = {
+            key: data.get(key) for key in [
+                'date_of_birth', 'gender', 'blood_type', 'phone', 'address',
+                'emergency_contact', 'emergency_phone', 'medical_history',
+                'allergies', 'current_medications', 'family_history',
+                'social_history', 'insurance_provider', 'insurance_number',
+                'weight', 'height'
+            ] if key in data and data.get(key) not in (None, '')
+        }
+
+        try:
+            with transaction.atomic():
+                user = User.objects.create_user(
+                    email=email,
+                    password=password,
+                    first_name=data.get('first_name', ''),
+                    last_name=data.get('last_name', ''),
+                    role='patient',
+                )
+                patient = Patient.objects.create(
+                    user=user,
+                    patient_id=f"PAT-{uuid.uuid4().hex[:8].upper()}",
+                    **patient_fields,
+                )
+        except IntegrityError as e:
+            return Response({'error': f'Could not create patient: {e}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(patient)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['get'])
     def medical_history(self, request, pk=None):
