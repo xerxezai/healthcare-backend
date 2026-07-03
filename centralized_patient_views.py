@@ -43,6 +43,11 @@ except ImportError:
     MedicinePatient = None
 
 try:
+    from medicine.models import Patient as MedicineGeneralPatient
+except ImportError:
+    MedicineGeneralPatient = None
+
+try:
     from hospital.models import HospitalPatient
 except ImportError:
     HospitalPatient = None
@@ -412,7 +417,14 @@ class CentralizedPatientAPI:
                 'app_name': 'Medicine System',
                 'source_id': 'medicine'
             })
-            
+
+        if MedicineGeneralPatient:
+            sources.append({
+                'model': MedicineGeneralPatient,
+                'app_name': 'Medicine System',
+                'source_id': 'medicine_general'
+            })
+
         if HospitalPatient:
             sources.append({
                 'model': HospitalPatient,
@@ -505,12 +517,17 @@ class CentralizedPatientAPI:
                 'dateAdded': getattr(patient, 'created_at', getattr(patient, 'date_created', timezone.now())).isoformat(),
             }
             
+            # Some models (e.g. medicine.Patient) store name/email on a linked
+            # user account rather than directly on the patient record.
+            linked_user = getattr(patient, 'user', None)
+            user_full_name = linked_user.get_full_name() if linked_user and linked_user.get_full_name() else None
+
             # Try to get common fields with fallbacks
             normalized.update({
-                'name': getattr(patient, 'name', getattr(patient, 'patient_name', getattr(patient, 'full_name', 'Unknown'))),
+                'name': getattr(patient, 'name', getattr(patient, 'patient_name', getattr(patient, 'full_name', user_full_name or 'Unknown'))),
                 'age': getattr(patient, 'age', getattr(patient, 'patient_age', 0)),
                 'contact': getattr(patient, 'phone', getattr(patient, 'contact', getattr(patient, 'phone_number', ''))),
-                'email': getattr(patient, 'email', getattr(patient, 'email_address', '')),
+                'email': getattr(patient, 'email', getattr(patient, 'email_address', getattr(linked_user, 'email', ''))),
                 'status': CentralizedPatientAPI.normalize_status(getattr(patient, 'status', 'Active')),
                 'createdBy': CentralizedPatientAPI.get_created_by(patient),
                 'diagnosis': getattr(patient, 'diagnosis', getattr(patient, 'condition', getattr(patient, 'symptoms', 'General consultation'))),
