@@ -73,6 +73,24 @@ def get_dna_sequencing_dashboard(request):
                 'nanovar': 'online',
                 'pharmaco_ai': 'online',
                 'omicsnet': 'maintenance'
+            },
+            'analysis_stats': {
+                'avg_turnaround_time': 4.2,
+                'success_rate': 91.5,
+                'avg_quality_score': 96.8,
+                'monthly_throughput': 156,
+                'queue_length': 8
+            },
+            'sequencing_technologies': [
+                {'name': 'Illumina NovaSeq', 'percentage': 59.6, 'samples': 28},
+                {'name': 'Oxford Nanopore', 'percentage': 25.5, 'samples': 12},
+                {'name': 'PacBio Sequel', 'percentage': 14.9, 'samples': 7}
+            ],
+            'variant_calling_stats': {
+                'snvs_detected': 25480,
+                'indels_detected': 3270,
+                'cnvs_detected': 892,
+                'svs_detected': 156
             }
         }
         
