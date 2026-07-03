@@ -16,6 +16,8 @@ urlpatterns = [
     path('api/medicine/', include('medicine.urls')),
     path('api/radiology/', include('radiology.urls')),
     path('api/dentistry/', include('dentistry.urls')),
+    path('api/secureneat/', include('secureneat.urls')),
+    path('api/secure-s3/', include('secureneat.secure_s3_urls')),
     path('patients/', include('patients.urls')),
     path('subscriptions/', include('subscriptions.urls')),
     path('dna-sequencing/', include('dna_sequencing.urls')),
