@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import User
 import uuid
 from django.core.validators import MinValueValidator, MaxValueValidator
 
@@ -177,7 +177,7 @@ class AllopathyFile(models.Model):
     s3_key = models.CharField(max_length=500)
     s3_bucket = models.CharField(max_length=255)
     upload_date = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     download_url = models.URLField(blank=True)
     expiry_date = models.DateTimeField(null=True, blank=True)
     is_confidential = models.BooleanField(default=True)
@@ -244,7 +244,7 @@ class AllopathyAnalysis(models.Model):
     risk_factors = models.JSONField(default=list, blank=True)
     follow_up_required = models.BooleanField(default=False)
     follow_up_date = models.DateField(null=True, blank=True)
-    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_analyses')
+    reviewed_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_analyses')
     review_notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     processing_time = models.DurationField(null=True, blank=True)

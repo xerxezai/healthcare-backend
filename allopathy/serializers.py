@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import (
     AllopathyHospital,
     AllopathyPatientS3,
@@ -12,7 +12,7 @@ from .models import (
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for User model"""
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
 
 class AllopathyHospitalSerializer(serializers.ModelSerializer):

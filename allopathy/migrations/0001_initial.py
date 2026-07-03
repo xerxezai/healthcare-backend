@@ -1,9 +1,9 @@
 # Generated migration for allopathy app
 
+from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import uuid
-from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('auth', '0012_alter_user_first_name_max_length'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -107,7 +107,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('hospital', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='allopathy.allopathyhospital')),
                 ('patient', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='files', to='allopathy.allopathypatients3')),
-                ('uploaded_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='auth.user')),
+                ('uploaded_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Allopathy File',
@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('file', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='analyses', to='allopathy.allopathyfile')),
                 ('hospital', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='analyses', to='allopathy.allopathyhospital')),
                 ('patient', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='analyses', to='allopathy.allopathypatients3')),
-                ('reviewed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reviewed_analyses', to='auth.user')),
+                ('reviewed_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reviewed_analyses', to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name': 'Allopathy Analysis',

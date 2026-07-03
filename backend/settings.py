@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     "dentistry",
     "dermatology",
     "cosmetology",
-    # "allopathy",  # Temporarily disabled due to model conflicts
+    "allopathy",
     "usage_tracking",
     "pathology",
     "medicine",
