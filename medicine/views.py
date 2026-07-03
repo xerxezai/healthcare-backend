@@ -528,8 +528,12 @@ class DashboardViewSet(viewsets.ViewSet):
             'active_treatment_plans': active_treatment_plans,
             'appointments_by_type': appointments_by_type,
             'emergency_triage_distribution': emergency_triage_distribution,
-            'recent_patients': PatientSummarySerializer(recent_patients, many=True).data,
-            'upcoming_appointments': AppointmentSerializer(upcoming_appointments, many=True).data,
+            # Pass raw querysets, not pre-serialized data - DashboardStatsSerializer
+            # declares these as nested serializer fields and will serialize them
+            # itself. Serializing here too double-serializes them, and the second
+            # pass crashes trying to treat an already-serialized dict as a model.
+            'recent_patients': recent_patients,
+            'upcoming_appointments': upcoming_appointments,
         }
         
         serializer = DashboardStatsSerializer(stats_data)

@@ -373,8 +373,12 @@ def pathology_dashboard(request):
         'completed_orders': completed_orders,
         'total_patients': total_patients,
         'total_tests': total_tests,
-        'recent_orders': PathologyOrderSerializer(recent_orders, many=True).data,
-        'recent_reports': PathologyReportSerializer(recent_reports, many=True).data,
+        # Raw querysets, not pre-serialized data - PathologyDashboardSerializer
+        # declares these as nested serializer fields and serializes them
+        # itself; serializing here too double-serializes and crashes on the
+        # second pass (a dict passed in where a model instance is expected).
+        'recent_orders': recent_orders,
+        'recent_reports': recent_reports,
         'critical_results': critical_results,
         'turnaround_time_avg': round(avg_turnaround, 2)
     }
