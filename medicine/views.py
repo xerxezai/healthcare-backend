@@ -188,10 +188,11 @@ class DoctorViewSet(viewsets.ModelViewSet):
             key: data.get(key) for key in [
                 'license_number', 'specialization', 'qualification',
                 'years_experience', 'education', 'certifications',
-                'hospital_affiliation', 'consultation_fee',
-                'is_available_emergency', 'bio'
-            ] if key in data
+                'hospital_affiliation', 'consultation_fee', 'bio'
+            ] if key in data and data.get(key) not in (None, '')
         }
+        if 'is_available_emergency' in data:
+            doctor_fields['is_available_emergency'] = str(data.get('is_available_emergency')).lower() == 'true'
         if 'profile_picture' in request.FILES:
             doctor_fields['profile_picture'] = request.FILES['profile_picture']
 
